@@ -3,7 +3,7 @@
 
 workflows:
   android-lamafia-release:
-    name: lamafia Android Release Build
+    name: lamafia-Android-Release
     max_build_duration: 60 # Tempo máximo em minutos
     instance_type: mac_mini_m1 # Ou outro tipo de instância disponível
     environment:
