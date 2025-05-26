@@ -1,0 +1,114 @@
+ codemagic.yaml - Configuração para build Flutter no CodeMagic (Projeto LAMAFIA)
+# Baseado nas informações de NOVOMETADADOS.txt e requisitos comuns.
+
+workflows:
+  android-lamafia-release:
+    name: LAMAFIA Android Release Build
+    max_build_duration: 60 # Tempo máximo em minutos
+    instance_type: mac_mini_m1 # Ou outro tipo de instância disponível
+    environment:
+      flutter: stable # Ou a versão específica do Flutter usada no projeto
+      xcode: latest # Necessário para ambiente macOS
+      cocoapods: default
+      # Variáveis de ambiente - Preencher no CodeMagic UI
+      groups:
+        - google_credentials # Grupo para credenciais Google (ex: google-services.json)
+        - keystore_credentials # Grupo para credenciais de assinatura
+      vars:
+        # --- Valores a serem definidos na UI do CodeMagic --- #
+        # PACKAGE_NAME: "com.lamafia.cla" # Definido aqui para referência, mas pode ser setado na UI
+        # APP_NAME: "lamafia"           # Definido aqui para referência
+        # CM_KEYSTORE_PATH: "/tmp/idcloned.keystore" # Caminho temporário onde o keystore será decodificado
+        # CM_KEYSTORE: Encrypted(...) # Conteúdo do keystore (idcloned.keystore) encriptado pelo CodeMagic
+        # CM_KEYSTORE_PASSWORD: Encrypted(lidcloned) # Senha do Keystore encriptada
+        # CM_KEY_ALIAS: Encrypted(minhachaveapp) # Alias da chave encriptado
+        # CM_KEY_ALIAS_PASSWORD: Encrypted(lidcloned) # Senha do Alias encriptada
+        # GOOGLE_SERVICES_JSON: Encrypted(...) # Conteúdo do google-services.json encriptado
+        # --- Fim das variáveis a serem definidas na UI --- #
+
+        # Valores fixos (podem ser sobrescritos na UI se necessário)
+        PACKAGE_NAME: "com.lamafia.cla"
+        APP_NAME: "lamafia"
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main # Ou a branch de release
+          include: true
+          source: true
+      tag_patterns:
+        - pattern: v*.*.* # Exemplo: v1.0.0
+          include: true
+
+    scripts:
+      - name: Set up local properties
+        script: |
+          echo "flutter.sdk=$FLUTTER_SDK" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Decode Keystore
+        script: |
+          echo $CM_KEYSTORE | base64 --decode > /tmp/idcloned.keystore
+          echo "Keystore decodificado em /tmp/idcloned.keystore"
+      - name: Decode google-services.json
+        script: |
+          echo $GOOGLE_SERVICES_JSON | base64 --decode > $CM_BUILD_DIR/android/app/google-services.json
+          echo "google-services.json decodificado."
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Generate App Icons (se necessário)
+        script: |
+          # Descomente se você usa flutter_launcher_icons e quer gerar a cada build
+          # flutter pub run flutter_launcher_icons:main
+          echo "Pulando geração de ícones (assumindo que já estão no repo ou gerados manualmente)"
+      - name: Build Android App Bundle (AAB)
+        script: |
+          # Limpa builds anteriores (opcional, mas recomendado)
+          flutter clean
+          # Constrói o AAB de release
+          flutter build appbundle --release \
+            --build-name=$CM_BUILD_VERSION \
+            --build-number=$CM_BUILD_NUMBER
+        env:
+           # As variáveis de keystore são usadas automaticamente pelo Flutter build
+           # quando definidas no ambiente (CM_KEYSTORE_PATH, etc.)
+           # mas podemos passá-las explicitamente se necessário.
+           KEYSTORE_PATH: /tmp/idcloned.keystore
+           KEYSTORE_PASSWORD: $CM_KEYSTORE_PASSWORD
+           KEY_ALIAS: $CM_KEY_ALIAS
+           KEY_ALIAS_PASSWORD: $CM_KEY_ALIAS_PASSWORD
+
+    artifacts:
+      - build/app/outputs/bundle/release/*.aab
+      - build/app/outputs/flutter-apk/*.apk # APKs gerados se usar `flutter build apk`
+      - flutter_drive.log
+
+    publishing:
+      # --- Exemplo: Upload para Google Drive --- #
+      # NOTA: Requer configuração de integração com Google Drive no CodeMagic
+      # e um script para fazer o upload.
+      # Exemplo usando gcloud (requer setup): 
+      # script: |
+      #   set -e
+      #   # Autenticar gcloud (usando service account key do CodeMagic)
+      #   gcloud auth activate-service-account --key-file=$GCLOUD_SERVICE_ACCOUNT_KEY
+      #   # Encontrar o AAB gerado
+      #   AAB_PATH=$(find $CM_BUILD_DIR/build/app/outputs/bundle/release -name '*.aab' | head -n 1)
+      #   # Fazer upload para um bucket GCS ou pasta Drive (ajustar comando)
+      #   gsutil cp $AAB_PATH gs://seu-bucket-ou-pasta-drive/lamafia-$CM_BUILD_VERSION.aab
+      #   echo "AAB enviado para Google Drive/GCS"
+
+      # --- Exemplo: Email (Notificação) --- #
+      email:
+        recipients:
+          - seu_email@exemplo.com # Adicionar seu email
+        notify:
+          success: true
+          failure: true
+
+      # --- Exemplo: Google Play Store --- #
+      # google_play:
+      #   credentials: $GOOGLE_PLAY_API_CREDENTIALS # Variável segura com JSON da API
+      #   track: internal # Ou alpha, beta, production
+      #   submit_as_draft: true
+

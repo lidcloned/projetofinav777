@@ -1,0 +1,85 @@
+name: lamafia
+description: 'Aplicativo LAMAFIA: Comunicação e organização para o clã.'
+publish_to: 'none' # Prevent accidental publishing to pub.dev
+version: 1.0.0+4 # Increment build number for apklucasv4
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6 # Specify a version for better stability
+
+  # Firebase (Estrutura preparada, mas desativada até configuração final)
+  firebase_core: ^2.27.0 
+  firebase_auth: ^4.17.8
+  cloud_firestore: ^4.15.8
+  firebase_storage: ^11.6.9
+
+  # Estado e armazenamento
+  provider: ^6.1.2
+  shared_preferences: ^2.2.2
+
+  # Plugins essenciais
+  # flutter_plugin_android_lifecycle: # Removido pois geralmente não é necessário diretamente
+  path_provider: ^2.1.2
+
+  # UI e formatação
+  intl: ^0.19.0 # Necessário para formatação
+  flutter_svg: ^2.0.10+1 # Para ícones SVG se forem usados
+
+  # Mídia
+  cached_network_image: ^3.3.1
+  flutter_cache_manager: ^3.3.1
+  audioplayers: ^5.2.1 # Para sons e playlist
+
+  # Mapas (Manter se a funcionalidade for necessária)
+  # flutter_map: ^6.1.0
+  # latlong2: ^0.9.1
+
+  # Notificações
+  flutter_local_notifications: ^17.0.0
+
+  # Utilitários
+  uuid: ^4.3.3
+  permission_handler: ^11.3.0 # Essencial para VOIP e outras features
+  connectivity_plus: ^5.0.2 # Para verificar conexão
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  flutter_launcher_icons: ^0.13.1 # Para gerar ícones do app
+
+flutter_icons:
+  android: true
+  ios: true
+  # Ícone principal do app (foreground)
+  image_path: "assets/images_png/lamafia_icon_foreground.png"
+  # Cor de fundo para ícones adaptativos Android
+  adaptive_icon_background: "#000000"
+  # Imagem foreground para ícones adaptativos Android (pode ser a mesma)
+  adaptive_icon_foreground: "assets/images_png/lamafia_icon_foreground.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    # Diretórios principais de assets
+    - assets/images_png/
+    - assets/audio/
+    - assets/fonts/
+    # Placeholders para assets futuros (adicionar arquivos quando disponíveis)
+    # - assets/images_svg/ # Para ícones vetoriais, se usados
+    # - assets/images_placeholders/ # Para logo oficial, splash, etc.
+    # - assets/audio_playlist/ # Para músicas da playlist
+
+  fonts:
+    - family: Gothic
+      fonts:
+        - asset: assets/fonts/gothic.ttf
+    - family: Digital
+      fonts:
+        - asset: assets/fonts/digital.ttf
+
