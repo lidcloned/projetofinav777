@@ -3,7 +3,7 @@
 
 workflows:
   android-lamafia-release:
-    name: LAMAFIA Android Release Build
+    name: lamafia Android Release Build
     max_build_duration: 60 # Tempo máximo em minutos
     instance_type: mac_mini_m1 # Ou outro tipo de instância disponível
     environment:
@@ -16,8 +16,8 @@ workflows:
         - keystore_credentials # Grupo para credenciais de assinatura
       vars:
         # --- Valores a serem definidos na UI do CodeMagic --- #
-        # PACKAGE_NAME: "com.lamafia.cla" # Definido aqui para referência, mas pode ser setado na UI
-        # APP_NAME: "lamafia"           # Definido aqui para referência
+         PACKAGE_NAME: "com.lamafia.cla" # Definido aqui para referência, mas pode ser setado na UI
+         APP_NAME: "lamafia"           # Definido aqui para referência
         # CM_KEYSTORE_PATH: "/tmp/idcloned.keystore" # Caminho temporário onde o keystore será decodificado
         # CM_KEYSTORE: Encrypted(...) # Conteúdo do keystore (idcloned.keystore) encriptado pelo CodeMagic
         # CM_KEYSTORE_PASSWORD: Encrypted(lidcloned) # Senha do Keystore encriptada
@@ -26,7 +26,7 @@ workflows:
         # GOOGLE_SERVICES_JSON: Encrypted(...) # Conteúdo do google-services.json encriptado
         # --- Fim das variáveis a serem definidas na UI --- #
 
-        # Valores fixos (podem ser sobrescritos na UI se necessário)
+         Valores fixos (podem ser sobrescritos na UI se necessário)
         PACKAGE_NAME: "com.lamafia.cla"
         APP_NAME: "lamafia"
 
@@ -101,7 +101,7 @@ workflows:
       # --- Exemplo: Email (Notificação) --- #
       email:
         recipients:
-          - seu_email@exemplo.com # Adicionar seu email
+          - lidcloned@gmail.com # Adicionar seu email
         notify:
           success: true
           failure: true
